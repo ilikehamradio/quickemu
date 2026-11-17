@@ -1,0 +1,40 @@
+# Maintainer: ilikehamradio
+# Based on the AUR quickemu PKGBUILD by Steffen Hansen <steffengrundsoe@gmail.com>
+#
+# Builds quickemu from the ilikehamradio fork, which teaches quickget to use
+# zsync2 when the classic zsync isn't packaged (Arch/Artix without [extra]).
+#
+# Install (pulls zsync2 from the AUR):  paru -Bi packaging/arch
+pkgname=quickemu-zsync2-git
+pkgver=4.9.9
+pkgrel=1
+pkgdesc="Quickly create and run optimised Windows, macOS and Linux desktop virtual machines (zsync2 fork)"
+arch=(any)
+url="https://github.com/ilikehamradio/quickemu"
+license=('MIT')
+depends=('qemu' 'coreutils' 'grep' 'jq' 'procps' 'python3' 'cdrtools' 'usbutils' 'util-linux' 'sed' 'spice-gtk' 'swtpm' 'wget' 'xorg-xrandr' 'zsync2' 'edk2-ovmf' 'xdg-user-dirs' 'socat')
+makedepends=('git')
+optdepends=('quickgui: graphical user interface' 'aria2: faster downloads')
+provides=('quickemu')
+conflicts=('quickemu')
+source=("quickemu::git+https://github.com/ilikehamradio/quickemu.git#branch=master")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd quickemu
+  # Upstream tags are plain versions (e.g. 4.9.9); fall back to commit count if untagged.
+  if git describe --long --tags --abbrev=7 &>/dev/null; then
+    git describe --long --tags --abbrev=7 | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+  else
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)"
+  fi
+}
+
+package() {
+  cd quickemu
+
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm755 -t "$pkgdir/usr/bin" chunkcheck quickemu quickget quickreport
+  install -Dm644 -t "$pkgdir/usr/share/man/man1" docs/quickemu.1 docs/quickget.1
+  install -Dm644 -t "$pkgdir/usr/share/man/man5" docs/quickemu_conf.5
+}
