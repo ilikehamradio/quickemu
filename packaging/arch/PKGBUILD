@@ -4,7 +4,10 @@
 # Builds quickemu from the ilikehamradio fork, which teaches quickget to use
 # zsync2 when the classic zsync isn't packaged (Arch/Artix without [extra]).
 #
-# Install (pulls zsync2 from the AUR):  paru -Bi packaging/arch
+# Install (pulls zsync2 from the AUR):
+#   paru -S --needed --mflags --nocheck cpr && paru -Bi packaging/arch
+# cpr's test suite has one test that fails against newer curl, so it's
+# installed with checks skipped first. See README "About this fork".
 pkgname=quickemu-zsync2-git
 pkgver=4.9.9
 pkgrel=1

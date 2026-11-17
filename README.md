@@ -36,8 +36,13 @@ Paste this into a terminal. It needs [paru](https://github.com/Morganamilo/paru)
 which also builds the `zsync2` dependency from the AUR:
 
 ```shell
-git clone https://github.com/ilikehamradio/quickemu.git ~/quickemu && cd ~/quickemu && paru -Bi packaging/arch
+git clone https://github.com/ilikehamradio/quickemu.git ~/quickemu && cd ~/quickemu && paru -S --needed --mflags --nocheck cpr && paru -Bi packaging/arch
 ```
+
+The `cpr` step installs zsync2's HTTP library with its test suite skipped. One
+of its tests fails against newer curl versions, which drop credentials from
+URLs on redirect. That doesn't affect the library itself, but it would abort
+the build.
 
 ## Update
 
@@ -45,8 +50,11 @@ The fork on GitHub updates itself, but your installed copy doesn't. To pull
 the latest version and reinstall:
 
 ```shell
-cd ~/quickemu && git pull && paru -Bi packaging/arch
+cd ~/quickemu && git checkout -- packaging && git pull && paru -Bi packaging/arch
 ```
+
+`git checkout -- packaging` undoes the version bump each build writes into the
+PKGBUILD, so `git pull` doesn't refuse to run.
 
 ## Other distros
 
