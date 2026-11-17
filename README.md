@@ -32,20 +32,11 @@ this fork automatically. If a merge ever conflicts, it opens an issue instead.
 
 ## Install on Arch / Artix / Manjaro
 
-Requires [paru](https://github.com/Morganamilo/paru) (or another AUR helper)
-for the `zsync2` dependency. Run these in a terminal:
+Paste this into a terminal. It needs [paru](https://github.com/Morganamilo/paru),
+which also builds the `zsync2` dependency from the AUR:
 
 ```shell
-git clone https://github.com/ilikehamradio/quickemu.git
-cd quickemu
-paru -Bi packaging/arch
-```
-
-Artix users without the Arch repos enabled: install `swtpm` and `xorg-xrandr`
-from Artix's `[world]` repo first if paru can't find them:
-
-```shell
-sudo pacman -S --needed swtpm xorg-xrandr
+git clone https://github.com/ilikehamradio/quickemu.git ~/quickemu && cd ~/quickemu && paru -Bi packaging/arch
 ```
 
 ## Update
@@ -54,9 +45,7 @@ The fork on GitHub updates itself, but your installed copy doesn't. To pull
 the latest version and reinstall:
 
 ```shell
-cd quickemu
-git pull
-paru -Bi packaging/arch
+cd ~/quickemu && git pull && paru -Bi packaging/arch
 ```
 
 ## Other distros
