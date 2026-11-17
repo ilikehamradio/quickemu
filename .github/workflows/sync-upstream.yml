@@ -1,0 +1,75 @@
+name: Sync upstream
+
+# Merges quickemu-project/quickemu master into this fork's master daily,
+# keeping the fork's zsync2 patches on top. On a merge conflict, nothing is
+# pushed and an issue is opened instead.
+#
+# Requires repo secret SYNC_TOKEN: a fine-grained PAT for this repo with
+# Contents (read/write), Workflows (read/write) and Issues (read/write).
+# The default GITHUB_TOKEN can't push upstream changes to .github/workflows.
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.repository == 'ilikehamradio/quickemu'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          token: ${{ secrets.SYNC_TOKEN }}
+
+      - name: Merge upstream master
+        id: merge
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/quickemu-project/quickemu.git
+          git fetch upstream master --tags
+
+          if git merge-base --is-ancestor upstream/master HEAD; then
+            echo "Already up to date with upstream."
+            exit 0
+          fi
+
+          if git merge --no-edit -m "Merge upstream quickemu-project/quickemu master" upstream/master; then
+            git push origin master
+            git push origin --tags
+            echo "Merged and pushed upstream changes."
+          else
+            git merge --abort
+            echo "conflict=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Report merge conflict
+        if: steps.merge.outputs.conflict == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+        run: |
+          TITLE="Upstream sync blocked by merge conflict"
+          if [ -z "$(gh issue list --state open --search "in:title \"${TITLE}\"" --json number --jq '.[].number')" ]; then
+            gh issue create --title "${TITLE}" --body "The scheduled merge of \`quickemu-project/quickemu\` master into \`master\` hit a conflict and was not pushed.
+
+          Resolve locally:
+          \`\`\`
+          git fetch upstream && git merge upstream/master
+          # fix conflicts, commit, push
+          \`\`\`
+
+          Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          fi
+          exit 1
