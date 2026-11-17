@@ -1,6 +1,6 @@
 name: Sync upstream
 
-# Merges quickemu-project/quickemu master into this fork's master daily,
+# Merges quickemu-project/quickemu master into this fork's master every 6 hours,
 # keeping the fork's zsync2 patches on top. On a merge conflict, nothing is
 # pushed and an issue is opened instead.
 #
@@ -10,7 +10,7 @@ name: Sync upstream
 
 on:
   schedule:
-    - cron: '17 6 * * *'
+    - cron: '17 */6 * * *'
   workflow_dispatch:
 
 permissions:

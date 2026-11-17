@@ -15,6 +15,55 @@
   &nbsp;<a href="https://linkedin.com/in/martinwimpress" target="_blank"><img alt="LinkedIn" src="https://img.shields.io/badge/LinkedIn-1667be?style=for-the-badge&logo=linkedin&logoColor=%23ffffff"></a>&nbsp;
 </p>
 
+# About this fork
+
+This is [ilikehamradio/quickemu](https://github.com/ilikehamradio/quickemu),
+a fork of [quickemu-project/quickemu](https://github.com/quickemu-project/quickemu).
+It differs from upstream in two ways:
+
+- `quickget` uses **`zsync2`** when classic `zsync` isn't installed. Arch-based
+  distros without Arch's `[extra]` repo (such as Artix) only have `zsync2`,
+  from the AUR.
+- An Arch package in [`packaging/arch/`](packaging/arch/PKGBUILD) depends on
+  `zsync2` instead of `zsync`.
+
+A GitHub Action checks upstream every 6 hours and merges any new changes into
+this fork automatically. If a merge ever conflicts, it opens an issue instead.
+
+## Install on Arch / Artix / Manjaro
+
+Requires [paru](https://github.com/Morganamilo/paru) (or another AUR helper)
+for the `zsync2` dependency. Run these in a terminal:
+
+```shell
+git clone https://github.com/ilikehamradio/quickemu.git
+cd quickemu
+paru -Bi packaging/arch
+```
+
+Artix users without the Arch repos enabled: install `swtpm` and `xorg-xrandr`
+from Artix's `[world]` repo first if paru can't find them:
+
+```shell
+sudo pacman -S --needed swtpm xorg-xrandr
+```
+
+## Update
+
+The fork on GitHub updates itself, but your installed copy doesn't. To pull
+the latest version and reinstall:
+
+```shell
+cd quickemu
+git pull
+paru -Bi packaging/arch
+```
+
+## Other distros
+
+On other distros, follow the upstream install instructions in the
+[documentation](#documentation) below. Everything else works as it does
+upstream.
 
 # Introduction
 
