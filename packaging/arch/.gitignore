@@ -1,0 +1,6 @@
+# makepkg build output
+/quickemu/
+/src/
+/pkg/
+*.pkg.tar*
+.SRCINFO
